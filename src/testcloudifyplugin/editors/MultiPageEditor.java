@@ -1,12 +1,6 @@
 package testcloudifyplugin.editors;
 
 
-import java.io.StringWriter;
-import java.text.Collator;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.StringTokenizer;
-
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
@@ -14,6 +8,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -26,11 +21,15 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FontDialog;
-import org.eclipse.ui.*;
-import org.eclipse.ui.editors.text.TextEditor;
-import org.eclipse.ui.part.FileEditorInput;
-import org.eclipse.ui.part.MultiPageEditorPart;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.ide.IDE;
+import org.eclipse.ui.part.FileEditorInput;
 
 /**
  * An example showing how to create a multi-page editor.
@@ -41,10 +40,10 @@ import org.eclipse.ui.ide.IDE;
  * <li>page 2 shows the words in page 0 in sorted order
  * </ul>
  */
-public class MultiPageEditor extends MultiPageEditorPart implements IResourceChangeListener{
+public class MultiPageEditor extends FormEditor implements IResourceChangeListener{
 
 	/** The text editor used in page 0. */
-	private TextEditor editor;
+	private CloudifyForm editor;
 
 	/** The font chosen in page 1. */
 	private Font font;
@@ -64,8 +63,9 @@ public class MultiPageEditor extends MultiPageEditorPart implements IResourceCha
 	 */
 	void createPage0() {
 		try {
-			editor = new TextEditor();
-			int index = addPage(editor, getEditorInput());
+			editor = new CloudifyForm(this, "cloudify.form","Cloudify Form");
+			
+			int index = addPage(editor, getEditorInput()); //addPage(editor, getEditorInput());
 			setPageText(index, editor.getTitle());
 		} catch (PartInitException e) {
 			ErrorDialog.openError(
@@ -115,14 +115,7 @@ public class MultiPageEditor extends MultiPageEditorPart implements IResourceCha
 		int index = addPage(composite);
 		setPageText(index, "Preview");
 	}
-	/**
-	 * Creates the pages of the multi-page editor.
-	 */
-	protected void createPages() {
-		createPage0();
-		createPage1();
-		createPage2();
-	}
+	
 	/**
 	 * The <code>MultiPageEditorPart</code> implementation of this 
 	 * <code>IWorkbenchPart</code> method disposes all nested editors.
@@ -152,20 +145,20 @@ public class MultiPageEditor extends MultiPageEditorPart implements IResourceCha
 	/* (non-Javadoc)
 	 * Method declared on IEditorPart
 	 */
-	public void gotoMarker(IMarker marker) {
-		setActivePage(0);
-		IDE.gotoMarker(getEditor(0), marker);
-	}
+//	public void gotoMarker(IMarker marker) {
+//		setActivePage(0);
+//		IDE.gotoMarker(getEditor(0), marker);
+//	}
 	/**
 	 * The <code>MultiPageEditorExample</code> implementation of this method
 	 * checks that the input is an instance of <code>IFileEditorInput</code>.
 	 */
-	public void init(IEditorSite site, IEditorInput editorInput)
-		throws PartInitException {
-		if (!(editorInput instanceof IFileEditorInput))
-			throw new PartInitException("Invalid Input: Must be IFileEditorInput");
-		super.init(site, editorInput);
-	}
+//	public void init(IEditorSite site, IEditorInput editorInput)
+//		throws PartInitException {
+//		if (!(editorInput instanceof IFileEditorInput))
+//			throw new PartInitException("Invalid Input: Must be IFileEditorInput");
+//		super.init(site, editorInput);
+//	}
 	/* (non-Javadoc)
 	 * Method declared on IEditorPart.
 	 */
@@ -175,12 +168,12 @@ public class MultiPageEditor extends MultiPageEditorPart implements IResourceCha
 	/**
 	 * Calculates the contents of page 2 when the it is activated.
 	 */
-	protected void pageChange(int newPageIndex) {
-		super.pageChange(newPageIndex);
-		if (newPageIndex == 2) {
-			sortWords();
-		}
-	}
+//	protected void pageChange(int newPageIndex) {
+//		super.pageChange(newPageIndex);
+//		if (newPageIndex == 2) {
+//			sortWords();
+//		}
+//	}
 	/**
 	 * Closes all project files on project close.
 	 */
@@ -218,7 +211,7 @@ public class MultiPageEditor extends MultiPageEditorPart implements IResourceCha
 	 */
 	void sortWords() {
 
-		String editorText =
+		/*String editorText =
 			editor.getDocumentProvider().getDocument(editor.getEditorInput()).get();
 
 		StringTokenizer tokenizer =
@@ -234,6 +227,19 @@ public class MultiPageEditor extends MultiPageEditorPart implements IResourceCha
 			displayText.write(((String) editorWords.get(i)));
 			displayText.write(System.getProperty("line.separator"));
 		}
-		text.setText(displayText.toString());
+		text.setText(displayText.toString());*/
 	}
+    @Override
+    protected void addPages() {
+        createPage0();
+    }
+    
+    @Override
+    protected void createPages() {
+//        super.createPages();
+//        
+//        if (getPageCount() == 1 &&   getContainer() instanceof CTabFolder) {
+//            ((CTabFolder) getContainer()).setTabHeight(0);
+//        }
+    }
 }
